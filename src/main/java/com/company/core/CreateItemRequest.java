@@ -3,6 +3,7 @@ package com.company.core;
 import com.company.model.ItemInst;
 import com.company.model.dto.ErrorResponse;
 import com.company.model.dto.ItemCreate;
+import com.company.utils.ItemType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -30,7 +31,6 @@ public class CreateItemRequest {
         boolean flag = false;
         setFields();
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<ItemInst> response = null;
         ObjectMapper mapper = new ObjectMapper();
         Properties properties = new Properties();
         InputStream is = RegisterRequest.class.getResourceAsStream("/app.properties");
@@ -44,7 +44,7 @@ public class CreateItemRequest {
         headers.set("Authorization", System.getProperty("SESSION_ID"));
         HttpEntity<ItemCreate> entity = new HttpEntity(new ItemCreate(title, description, itemType), headers);
         try {
-            response = restTemplate.exchange(properties.getProperty("urlItems"), HttpMethod.POST, entity, ItemInst.class );
+            ResponseEntity<ItemInst> response = restTemplate.exchange(properties.getProperty("urlItems"), HttpMethod.POST, entity, ItemInst.class);
             System.out.println(response.getBody());
             flag = true;
         } catch (HttpClientErrorException e) {
@@ -91,19 +91,32 @@ public class CreateItemRequest {
             }
         }
         flag = true;
-        System.out.println("Input type of item (1 - Task, 2 - Bug, 3 - Test):");
+        System.out.println("Input type of item (1 or Task, 2 or Bug, 3 or Test):");
         while (flag) {
-            itemType = Integer.parseInt(bufferedReader.readLine());
-            if (itemType <= 3 && itemType >= 1) {
+            String str = bufferedReader.readLine();
+            if (str.equalsIgnoreCase("task") || str.equalsIgnoreCase("bug") || str.equalsIgnoreCase("test")) {
+                str = str.toUpperCase();
+                System.out.println((ItemType.valueOf(str).ordinal()+1)+"test");
+                itemType = ItemType.valueOf(str).ordinal()+1;
                 flag = false;
             } else {
+                try {
+                    itemType = Integer.parseInt(str);
+                    if (itemType <= 3 && itemType >= 1) {
+                        flag = false;
+                    } else {
 
-                System.err.println("Item type id must be between 1 and 3");
+                        System.err.println("Wrong item type");
+
+                    }
+                } catch (Exception e) {
+                    System.err.println("Wrong item type");
+                }
 
             }
         }
-
     }
 
-
 }
+
+
