@@ -1,13 +1,18 @@
 package com.company.menu.items;
 
-import com.company.core.ItemStatusChangeRequest;
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.ItemStatusChangeRequestInt;
 import com.company.menu.Item;
+import com.company.model.Interfaces.ChangeStatusInt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class ChangeStatus extends Item {
+@Service
+public class ChangeStatus extends Item implements ChangeStatusInt {
 
-    public ChangeStatus(InputOutput inputOutput) {
-        super(inputOutput);
+    @Autowired
+    ItemStatusChangeRequestInt itemStatusChangeRequestInt;
+
+    public ChangeStatus(){
     }
 
     @Override
@@ -17,6 +22,6 @@ public class ChangeStatus extends Item {
 
     @Override
     public void perform() {
-        ItemStatusChangeRequest.changeStatus();
+        itemStatusChangeRequestInt.changeStatus();
     }
 }

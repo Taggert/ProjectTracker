@@ -1,13 +1,19 @@
 package com.company.menu.items;
 
-import com.company.core.DeleteItemRequest;
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.DeleteItemRequestInt;
 import com.company.menu.Item;
+import com.company.model.Interfaces.DeletItemInt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class DeletItem extends Item {
+@Service
+public class DeletItem extends Item implements DeletItemInt {
 
-    public DeletItem(InputOutput inputOutput) {
-        super(inputOutput);
+    @Autowired
+    DeleteItemRequestInt deleteItemRequestInt;
+
+    public DeletItem( ) {
+
     }
 
     @Override
@@ -17,6 +23,6 @@ public class DeletItem extends Item {
 
     @Override
     public void perform() {
-        DeleteItemRequest.deleteItem();
+        deleteItemRequestInt.deleteItem();
     }
 }

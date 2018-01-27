@@ -1,49 +1,45 @@
 package com.company.core;
 
+import com.company.model.Interfaces.UpdateUserByIdInt;
+import com.company.model.User;
+import com.company.model.dto.ErrorResponse;
+import com.company.model.dto.UserUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.company.model.User;
-import com.company.model.dto.ErrorResponse;
-import com.company.model.dto.UserUpdateRequest;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+@Service
+public class UpdateUserById implements UpdateUserByIdInt {
 
-public class UpdateUserById {
 
+    private String firstName;
+    private String lastName;
+    private String email;
 
-    private static String firstName;
-    private static String lastName;
-    private static String email;
+    @Value("${urlUser}")
+    String url;
 
     @SneakyThrows
-    private static ResponseEntity<User> updateUserById() {
+    public ResponseEntity<User> updateUserById() {
 
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<User> response = null;
-        Properties properties = new Properties();
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = RegisterRequest.class.getResourceAsStream("/app.properties");
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            System.err.println("Something wrong with property file");
-        }
 
         setFields();
         HttpHeaders headers = new HttpHeaders();
@@ -56,7 +52,7 @@ public class UpdateUserById {
 
         HttpEntity<UserUpdateRequest> entity = new HttpEntity(new UserUpdateRequest(firstName, lastName, email), headers);
         try {
-            response = restTemplate.exchange(properties.getProperty("urlUser"), HttpMethod.PUT,
+            response = restTemplate.exchange(url, HttpMethod.PUT,
                     entity, User.class, urlParams);
             System.out.println(response.getBody());
         } catch (HttpClientErrorException e) {
@@ -74,7 +70,7 @@ public class UpdateUserById {
     }
 
 
-    public static void printResponce() {
+    public  void printResponce() {
 
         ResponseEntity<User> response = updateUserById();
         System.out.println(response.getBody());
@@ -83,7 +79,7 @@ public class UpdateUserById {
     }
 
     @SneakyThrows
-    private static void setFields() {
+    private void setFields() {
         boolean flag = true;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Input new firstname (3-50 letters):");

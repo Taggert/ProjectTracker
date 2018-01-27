@@ -1,38 +1,34 @@
 package com.company.core;
 
+import com.company.model.Interfaces.LogoutRequestInt;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+@Service
+public class LogoutRequest implements LogoutRequestInt {
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+    @Value("${urlLogout}")
+    String url;
 
-public class LogoutRequest {
-
-    private static ResponseEntity<String> logOut() {
+    public ResponseEntity<String> logOut() {
         RestTemplate restTemplate = new RestTemplate();
 
-        Properties properties = new Properties();
-        InputStream is = RegisterRequest.class.getResourceAsStream("/app.properties");
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            System.err.println("Something wrong with property file");
-        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "*/*");
         headers.set("Authorization", System.getProperty("SESSION_ID"));
         HttpEntity entity = new HttpEntity(headers);
-        ResponseEntity<String> response = restTemplate.exchange(properties.getProperty("urlLogout"), HttpMethod.POST,
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST,
                 entity, String.class);
         System.clearProperty(System.getProperty("SESSION_ID"));
         return response;
     }
 
-    public static void printResponce() {
+    public void printResponce() {
         ResponseEntity<String> response = logOut();
         System.out.println("User is logged out");
 

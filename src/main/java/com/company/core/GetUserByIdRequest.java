@@ -1,39 +1,36 @@
 package com.company.core;
 
+import com.company.model.Interfaces.GetUserByIdRequestInt;
+import com.company.model.User;
+import com.company.model.dto.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.company.model.User;
-import com.company.model.dto.ErrorResponse;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-public class GetUserByIdRequest {
+@Service
+public class GetUserByIdRequest implements GetUserByIdRequestInt {
+
+    @Value("${urlUser}")
+    String url;
 
     @SneakyThrows
-    private static ResponseEntity<User> getUserById() {
+    public ResponseEntity<User> getUserById() {
 
 
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<User> response = null;
-        Properties properties = new Properties();
-        InputStream is = RegisterRequest.class.getResourceAsStream("/app.properties");
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            System.err.println("Something wrong with property file");
-        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "*/*");
@@ -43,7 +40,7 @@ public class GetUserByIdRequest {
         Map<String, String> urlParams = new LinkedHashMap<>();
         urlParams.put("userID", System.getProperty("USER_ID"));
         try {
-            response = restTemplate.exchange(properties.getProperty("urlUser"), HttpMethod.GET,
+            response = restTemplate.exchange(url, HttpMethod.GET,
                     entity, User.class, urlParams);
         } catch (HttpClientErrorException e) {
             ErrorResponse errorResponse = mapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
@@ -59,7 +56,7 @@ public class GetUserByIdRequest {
         return response;
     }
 
-    public static void printResponce() {
+    public void printResponce() {
         ResponseEntity<User> response = getUserById();
         if(response.getBody() == null){
             System.out.println("No such user");

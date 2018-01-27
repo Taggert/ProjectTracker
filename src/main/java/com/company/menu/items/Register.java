@@ -1,16 +1,28 @@
 package com.company.menu.items;
 
-import com.company.core.RegisterRequest;
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.RegisterRequestInt;
+import com.company.menu.ConsoleInputOutput;
+import com.company.model.Interfaces.*;
 import com.company.menu.Item;
 import com.company.menu.Menu;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
+@Service
+public class Register extends Item implements RegisterInt {
 
-public class Register extends Item {
+    @Autowired
+    RegisterRequestInt registerRequestInt;
+    @Autowired
+    UserInfoInt userInfoInt;
+    @Autowired
+    ItemManagementInt itemManagementInt;
+    @Autowired
+    LogoutInt logoutInt;
+    private InputOutput inputOutput = new ConsoleInputOutput();
 
-
-    public Register(InputOutput inputOutput) {
-        super(inputOutput);
+    public Register() {
     }
 
     @Override
@@ -20,9 +32,8 @@ public class Register extends Item {
 
     @Override
     public void perform() {
-
-        if (RegisterRequest.getResponce()) {
-            System.out.println("Hi "+ RegisterRequest.user.getFirstName() + " " + RegisterRequest.user.getLastName());
+        if (registerRequestInt.getResponce()) {
+            System.out.println("Hi "+ registerRequestInt.getUser().getFirstName() + " " + registerRequestInt.getUser().getLastName());
             ArrayList<Item> items = getItems();
             Menu menu = new Menu(items, inputOutput);
             menu.runMenu();
@@ -32,9 +43,9 @@ public class Register extends Item {
     private ArrayList<Item> getItems() {
         ArrayList<Item> res = new ArrayList<>();
 
-        res.add(new UserInfo(inputOutput));
-        res.add(new ItemManagement(inputOutput));
-        res.add(new Logout(inputOutput));
+        res.add((Item) userInfoInt);
+        res.add((Item) itemManagementInt);
+        res.add((Item) logoutInt);
 
 
 

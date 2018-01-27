@@ -1,6 +1,6 @@
 package com.company.menu.items;
 
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.InputOutput;
 import com.company.menu.Item;
 
 public class ExitItem extends Item {

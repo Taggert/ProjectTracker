@@ -1,14 +1,19 @@
 package com.company.menu.items;
 
-import com.company.core.AllItemsRequest;
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.AllItemsRequestInt;
 import com.company.menu.Item;
+import com.company.model.Interfaces.AllItemsInt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class AllItems extends Item {
+@Service
+public class AllItems extends Item implements AllItemsInt {
 
+    @Autowired
+    AllItemsRequestInt allItemsRequestInt;
 
-    public AllItems(InputOutput inputOutput) {
-        super(inputOutput);
+    public AllItems() {
+
     }
 
     @Override
@@ -19,7 +24,7 @@ public class AllItems extends Item {
     @Override
     public void perform() {
 
-        AllItemsRequest.printResponse();
+        allItemsRequestInt.printResponse("false");
 
     }
 }

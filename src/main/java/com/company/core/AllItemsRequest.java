@@ -1,32 +1,31 @@
 package com.company.core;
 
+import com.company.model.Interfaces.AllItemsRequestInt;
+import com.company.model.ItemInst;
+import com.company.model.dto.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.company.model.ItemInst;
-import com.company.model.dto.ErrorResponse;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
+@Service
+public class AllItemsRequest implements AllItemsRequestInt {
 
-public class AllItemsRequest {
+    @Value("${urlItems}")
+    String url;
+
     @SneakyThrows
-    private static ResponseEntity<ItemInst[]> getAllItems(){
+    public ResponseEntity<ItemInst[]> getAllItems(String flag){
         RestTemplate restTemplate = new RestTemplate();
-        Properties properties = new Properties();
-        InputStream is = AllItemsRequest.class.getResourceAsStream("/app.properties");
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            System.err.println("Something wrong with property file");
-        }
         ObjectMapper mapper = new ObjectMapper();
 
         ResponseEntity<ItemInst[]> response = null;
@@ -34,8 +33,10 @@ public class AllItemsRequest {
         headers.set("Accept", "application/json;charset=UTF-8");
         headers.set("Authorization", System.getProperty("SESSION_ID"));
         HttpEntity entity = new HttpEntity(headers);
+        Map<String, String> urlParams = new LinkedHashMap<>();
+        urlParams.put("flag", flag);
         try{
-            response = restTemplate.exchange(properties.getProperty("urlItems"), HttpMethod.GET, entity, ItemInst[].class );
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, ItemInst[].class, urlParams );
         } catch (HttpClientErrorException e){
             ErrorResponse errorResponse = mapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
             System.out.println( errorResponse.getMessage());
@@ -46,8 +47,8 @@ public class AllItemsRequest {
         return response;
     }
 
-    public static void printResponse(){
-        ResponseEntity<ItemInst[]> response = getAllItems();
+    public  void printResponse(String flag){
+        ResponseEntity<ItemInst[]> response = getAllItems(flag);
         System.out.println("Items:");
         Arrays.asList(response.getBody()).forEach(System.out::println);
     }

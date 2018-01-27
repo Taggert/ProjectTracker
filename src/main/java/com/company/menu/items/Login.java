@@ -1,16 +1,30 @@
 package com.company.menu.items;
 
-import com.company.core.LoginRequest;
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.LoginRequestInt;
+import com.company.menu.ConsoleInputOutput;
+import com.company.model.Interfaces.*;
 import com.company.menu.Item;
 import com.company.menu.Menu;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
+@Service
+public class Login extends Item implements LoginInt {
 
-public class Login extends Item{
+    @Autowired
+    LoginRequestInt loginRequestInt;
+    @Autowired
+    UserInfoInt userInfoInt;
+    @Autowired
+    ItemManagementInt itemManagementInt;
+    @Autowired
+    LogoutInt logoutInt;
 
+    private InputOutput inputOutput = new ConsoleInputOutput();
 
-    public Login(InputOutput inputOutput) {
-        super(inputOutput);
+    public Login() {
+
     }
 
     public String displayedName() {
@@ -19,8 +33,8 @@ public class Login extends Item{
 
     public void perform() {
 
-           if(LoginRequest.logIn()){
-               System.out.println("Hi "+ LoginRequest.user.getFirstName() + " " + LoginRequest.user.getLastName());
+           if(loginRequestInt.logIn()){
+               System.out.println("Hi "+ loginRequestInt.getUser().getFirstName() + " " + loginRequestInt.getUser().getLastName());
                ArrayList<Item> items = getItems();
                Menu menu = new Menu(items, inputOutput);
                menu.runMenu();
@@ -30,9 +44,9 @@ public class Login extends Item{
     private ArrayList<Item> getItems() {
         ArrayList<Item> res = new ArrayList<>();
 
-        res.add(new UserInfo(inputOutput));
-        res.add(new ItemManagement(inputOutput));
-        res.add(new Logout(inputOutput));
+        res.add((Item) userInfoInt);
+        res.add((Item) itemManagementInt);
+        res.add((Item) logoutInt);
 
         return res;
     }

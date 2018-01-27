@@ -1,5 +1,7 @@
 package com.company.menu;
  
+import com.company.model.Interfaces.InputOutput;
+
 import java.util.Scanner;
 
 public class ConsoleInputOutput implements InputOutput {

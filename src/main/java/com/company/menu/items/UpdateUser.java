@@ -1,14 +1,18 @@
 package com.company.menu.items;
 
-import com.company.core.UpdateUserById;
-import com.company.menu.InputOutput;
+import com.company.model.Interfaces.UpdateUserByIdInt;
 import com.company.menu.Item;
+import com.company.model.Interfaces.UpdateUserInt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class UpdateUser extends Item {
+@Service
+public class UpdateUser extends Item implements UpdateUserInt {
 
+    @Autowired
+    UpdateUserByIdInt updateUserByIdInt;
 
-    public UpdateUser(InputOutput inputOutput) {
-        super(inputOutput);
+    public UpdateUser() {
     }
 
     @Override
@@ -19,7 +23,7 @@ public class UpdateUser extends Item {
     @Override
     public void perform() {
 
-        UpdateUserById.printResponce();
+        updateUserByIdInt.printResponce();
 
     }
 }

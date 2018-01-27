@@ -1,4 +1,4 @@
-package com.company.menu;
+package com.company.model.Interfaces;
  
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

@@ -1,50 +1,47 @@
 package com.company.core;
 
+import com.company.model.Interfaces.CreateItemRequestInt;
 import com.company.model.ItemInst;
 import com.company.model.dto.ErrorResponse;
 import com.company.model.dto.ItemCreate;
 import com.company.utils.ItemType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Properties;
 
-public class CreateItemRequest {
+@Service
+public class CreateItemRequest implements CreateItemRequestInt {
 
+    @Value("${urlCreateItem}")
+    String url;
     private static String title;
     private static String description;
     private static Integer itemType;
 
     @SneakyThrows
-    public static boolean getResponce() {
+    public boolean getResponce() {
         boolean flag = false;
         setFields();
-        RestTemplate restTemplate = new RestTemplate();
-        ObjectMapper mapper = new ObjectMapper();
-        Properties properties = new Properties();
-        InputStream is = RegisterRequest.class.getResourceAsStream("/app.properties");
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            System.err.println("Something wrong with property file");
-        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "*/*");
         headers.set("Authorization", System.getProperty("SESSION_ID"));
         HttpEntity<ItemCreate> entity = new HttpEntity(new ItemCreate(title, description, itemType), headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            ResponseEntity<ItemInst> response = restTemplate.exchange(properties.getProperty("urlItems"), HttpMethod.POST, entity, ItemInst.class);
+            ResponseEntity<ItemInst> response = restTemplate.exchange(url, HttpMethod.POST, entity, ItemInst.class);
             System.out.println(response.getBody());
             flag = true;
         } catch (HttpClientErrorException e) {
@@ -96,7 +93,7 @@ public class CreateItemRequest {
             String str = bufferedReader.readLine();
             if (str.equalsIgnoreCase("task") || str.equalsIgnoreCase("bug") || str.equalsIgnoreCase("test")) {
                 str = str.toUpperCase();
-                System.out.println((ItemType.valueOf(str).ordinal()+1)+"test");
+
                 itemType = ItemType.valueOf(str).ordinal()+1;
                 flag = false;
             } else {

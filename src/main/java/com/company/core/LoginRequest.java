@@ -1,49 +1,45 @@
 package com.company.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
+import com.company.model.Interfaces.LoginRequestInt;
 import com.company.model.User;
 import com.company.model.dto.ErrorResponse;
 import com.company.model.dto.UserLoginRequest;
 import com.company.model.dto.UserRegistrationAndLoginResponce;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+@Service
+@Data
+public class LoginRequest implements LoginRequestInt {
 
-public class LoginRequest {
-
-    private static String email = "";
-    private static String password = "";
-    public static User user;
+    @Value("${urlLogin}")
+    String url;
+    private  String email = "";
+    private  String password = "";
+    public  User user;
 
     @SneakyThrows
-    public static boolean logIn() {
+    public boolean logIn() {
         ResponseEntity<UserRegistrationAndLoginResponce> response = null;
         boolean flag = false;
         setFields();
 
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper mapper = new ObjectMapper();
-        Properties properties = new Properties();
-        InputStream is = RegisterRequest.class.getResourceAsStream("/app.properties");
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            System.err.println("Something wrong with property file");
-        }
 
         try {
-            response = restTemplate.postForEntity(
-                    properties.getProperty("urlLogin"), new UserLoginRequest(email, password),
+            response = restTemplate.postForEntity(url, new UserLoginRequest(email, password),
                     UserRegistrationAndLoginResponce.class);
             user = response.getBody().getUser();
             System.setProperty("SESSION_ID", response.getBody().getSessionId());
@@ -69,7 +65,7 @@ public class LoginRequest {
     }
 
     @SneakyThrows
-    private static void setFields() {
+    private  void setFields() {
         boolean flag = true;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Input email (should match example@example.com):");
